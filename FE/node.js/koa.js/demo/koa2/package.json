@@ -1,0 +1,19 @@
+{
+  "name": "koa2-demo",
+  "version": "1.0.0",
+  "description": "一个koa2的demo项目",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "koa"
+  ],
+  "author": "WuDeXiong",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.14.2",
+    "koa-bodyparser": "^4.4.0",
+    "koa-router": "^12.0.0"
+  }
+}
