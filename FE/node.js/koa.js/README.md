@@ -252,6 +252,128 @@ app.listen(3000, ()=> {
 });
 ```
 
+## 静态资源服务
+
+```js
+const Koa = require("koa");
+const path = require("path");
+const fs = require("fs");
+const app = new Koa();
+const mimes = {
+    'css': 'text/css',
+    'less': 'text/css',
+    'gif': 'image/gif',
+    'html': 'text/html',
+    'ico': 'image/x-icon',
+    'jpeg': 'image/jpeg',
+    'jpg': 'image/jpeg',
+    'js': 'text/javascript',
+    'json': 'application/json',
+    'pdf': 'application/pdf',
+    'png': 'image/png',
+    'svg': 'image/svg+xml',
+    'swf': 'application/x-shockwave-flash',
+    'tiff': 'image/tiff',
+    'txt': 'text/plain',
+    'wav': 'audio/x-wav',
+    'wma': 'audio/x-ms-wma',
+    'wmv': 'video/x-ms-wmv',
+    'xml': 'text/xml'
+};
+
+app.use(async (ctx) => {
+    // 静态资源目录
+    const staticPath = path.join(__dirname, "./static");
+
+    // 请求完的路径
+    const reqPath = path.join(staticPath, ctx.url);
+
+    // 请求内容
+    let content = "";
+    if (!fs.existsSync(reqPath)) {
+        content = "404 Not Found";
+    } else {
+        const stat = fs.statSync(reqPath);
+        if (stat.isDirectory()) {
+            const files = fs.readdirSync(reqPath);
+            const dirList = [], fileList = [];
+            files.forEach((item) => {
+                const itemArr = item.split("\.");
+                const itemMime = itemArr.length > 1 ? itemArr[itemArr.length - 1] : void 0;
+                typeof mimes[itemMime] === "undefined" ? dirList.push(item) : fileList.push(item);
+            })
+            const contentList = dirList.concat(fileList);
+
+            let html = `<ul>`;
+            for (let [_, item] of contentList.entries()) {
+                html = `${html}<li><a href="${ctx.url === '/' ? '' : ctx.url}/${item}">${item}</a>`
+            };
+            html = `${html}</ul>`;
+            content = html;
+        }
+        else {
+            content = fs.readFileSync(reqPath, "binary");
+        };
+    };
+    ctx.body = content;
+});
+
+app.listen(3000, ()=> {
+    console.log("Server is running on port 3000"); 
+});
+```
+
+### koa-static
+
+```bash
+yarn add koa-static
+```
+
+```js
+
+const Koa = require("koa");
+const static = require("koa-static");
+const path = require("path");
+const app = new Koa();
+
+app.use(static(path.join(__dirname, "./static")))
+
+app.listen(3001, ()=> {
+    console.log("Server is running on port 3001")
+})
+```
+
+## cookie
+
+```js
+
+const Koa = require("koa");
+const app = new Koa();
+app.use(async (ctx) => {
+    if (ctx.url === "/cookie") {
+        ctx.cookies.set("cid", "test", {
+            domain: "localhost", // 指定域名，不要包含后缀名！！！ (Optional) 默认为当前域名。
+            path: "/index",
+            maxAge: 1 * 60 * 1000, // 指定有效期，单位为秒。 (Optional) 默认为1天。 （一个
+            expires: new Date("2023-6-4"), // (Optional) 指定一个有效的过期时间。 （例如，“Thu, 01 Jan 1970 00:00
+            httpOnly: false,
+            overwrite: false,
+        })
+        ctx.body = 'cookie is ok'
+    }
+    else if (ctx.url === "/" ) {
+        ctx.body = 'hello world' 
+    }
+    else {
+        ctx.body = "404"
+    }
+});
+app.listen(3000, () => {
+    console.log("[demo] start is port 3000");
+});
+```
+
+
 ## 参考
 
 * <https://github.com/chenshenhai/koa2-note>
