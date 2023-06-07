@@ -4,7 +4,13 @@
 
 单线程、非阻塞I/O/、事件编程驱动、开平台
 
+## 可能用到的工具
+
+* supervisor 文件改动自动重启
+
 ## 问题
+
+* 使用`import` 导入 需要在package.json中添加字段`"type": "module"`
 
 ## 参考
 
