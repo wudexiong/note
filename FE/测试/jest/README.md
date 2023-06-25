@@ -62,6 +62,17 @@
 
 ```
 
+3.模拟默认模块导出时直接模拟返回一个对象，对象中包含默认导出出错？
+
+```ts
+// 错误
+jest.mock("xxx", ()=> ({
+  default: () => "defaultValue"
+}))
+// 正确
+jest.mock("xxx", ()=> (()=> "defaultValue"))
+```
+
 ## 资料
 
 [jest中文官网]<https://www.jestjs.cn/docs/getting-started>
